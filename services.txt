@@ -1,0 +1,387 @@
+mport React, { useEffect } from "react";
+import { Formik, Form, Field, useFormikContext } from "formik";
+import {
+  TextField,
+  PasswordField,
+  ConfirmField,
+  CheckField,
+  TextArea,
+  styles,
+  PhoneField,
+  CustomSelect,
+  UploadComponent,
+} from "../components/InputField";
+import Select from "react-select";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
+import { BsCloudArrowUp } from "react-icons/bs";
+import * as Yup from "yup";
+import "../styles/SignUp.css";
+import NaijaStates from 'naija-state-local-government';
+import { useDeliverySignup } from '../hooks/core/useSignUp';
+import bankList from "../components/BankLists.json";
+import { useBankDetails } from "../hooks/core/useBankDetails";
+
+import { Link } from "react-router-dom";
+
+const DeliverySignup = () => {
+  const validate = Yup.object({
+    fullname: Yup.string()
+      .max(50, "Must be 50 characters or less")
+      .required("Required"),
+    institution: Yup.string()
+      .max(50, "Must be 50 characters or less")
+      .required("Required"),
+    
+    email: Yup.string().email("Email is invalid").required("Email is Required"),
+    working: Yup.string()
+    .max(50, "Must be 50 characters or less")
+    .required("Required"),
+    experience: Yup.string()
+    .max(10, "Must be 50 characters or less")
+    .required("Required"),
+    password: Yup.string()
+      .matches(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/,
+        "Must contain 8 Characters,One Uppercase, One Lowercase and One Number"
+      )
+      .required("Password is Required"),
+    confirmPassword: Yup.string()
+      .oneOf([Yup.ref("password"), null], "Password must match")
+      .required("Confirm Password is Required"),
+    accountNumber: Yup.number().required("Required").positive().integer(),
+    accountName: Yup.string().required("Required"),
+    acceptTerms: Yup.bool().oneOf([true], 'Field must be checked'),
+    nationalId: Yup.array().required(),
+    idCard: Yup.array().required(),
+  });
+  const options = [
+    { value: "Male", label: "Male" },
+    { value: "Female", label: "Female" },
+  ];
+
+  const bankOptions = bankList.map(item => ({ value: item.code, label: item.name }));
+
+  const stateArray = NaijaStates.states();
+  const states = [];
+  stateArray.map((item, id) => states.push({
+    value: item.toLowerCase(),
+    label: item
+  }))
+
+  const [fetchData] = useDeliverySignup()
+  const onSubmit = (values) => {
+    fetchData(values)
+  }
+
+  return (
+    <div>
+      <Formik
+        initialValues={{
+          fullname: "",
+          email: "",
+          password: "",
+          phone_no: "",
+          gender: "",
+          institution: "",
+          working: "",
+          experience: "",
+          state: "",
+          confirmPassword: "",
+          accountNumber: "",
+          other_information: "",
+          bank_name: "",
+          accountName: "",
+          nationalId: [],
+          idCard: [],
+          acceptTerms: false,
+        }}
+        validationSchema={validate}
+        validateOnBlur
+        onSubmit={values => onSubmit(values)}
+      >
+        {(formik) => (
+          <Form onSubmit={formik.handleSubmit} >
+            <DeliveryFormik />
+            <div className="shadow-lg md:px-4 px-52 contain md:py-20">
+              {console.log(formik)}
+              <div className="mx-0 mb-8 bg-umcolor-primary text-umcolor-secondary">
+                <h2 className="text-3xl font-bold text-center header md:text-sm ">
+                  <span className="md:hidden" >REGISTER as UMdelivery</span><span className="hidden md:block" >REGISTER AS A DELIVERY PERSON</span>
+                </h2>
+              </div>
+              <h2 className="text-base font-bold">Delivery Info.</h2>
+              <div className="px-10 py-16 mx-0 mb-10 bg-gray-100 border-t-4 shadow-lg md:py-8 md:px-4 border-umcolor-secondary">
+                <div className="grid grid-cols-2 md:hidden gap-14">
+                  <div>
+                    <TextField
+                      label="Full Name"
+                      name="fullname"
+                      type="text"
+                      placeholder="Enter your full name"
+                    />
+                    <TextField
+                      label="Email Address"
+                      name="email"
+                      type="email"
+                      placeholder="Enter your email address"
+                    />
+                    <PasswordField
+                      label="Password"
+                      name="password"
+                      placeholder="Password should contain  Minimum of 7 Characters"
+                    />
+                    <TextField
+                      label="Name of Institution"
+                      name="institution"
+                      type="text"
+                      placeholder="Enter your Institution Name"
+                    />
+                    <TextField
+                      label="Working Day(s)"
+                      name="working"
+                      type="text"
+                      placeholder="Enter working day(s) (e.g Monday & Saturday)"
+                    />
+                  </div>
+                  <div>
+                    <PhoneField 
+                      label="Phone Number"
+                      specialLabel="Store Number"
+                      name="phone_no"
+                      required={true}
+                    />
+                    <CustomSelect 
+                      onChange={value=>formik.setFieldValue('gender', value.value)}
+                      error={formik.errors.gender}
+                      value={formik.values.gender}
+                      label="Gender"
+                      options={options}
+                      required={true}
+                    />
+                    <ConfirmField
+                      label="Confirm Password"
+                      name="confirmPassword"
+                      placeholder="Password should contain  Minimum of 7 Characters"
+                    />
+                    <CustomSelect 
+                      onChange={value=>formik.setFieldValue('state', value.value)}
+                      error={formik.errors.state}
+                      value={formik.values.state}
+                      label="State/ Location"
+                      options={states}
+                      required={true}
+                    />
+                    <TextField
+                      label="Year(s) of Experience"
+                      name="experience"
+                      type="number"
+                      placeholder="Enter your year(s) of experience"
+                    />
+                  </div>
+                </div>
+                <div className=" md:hidden" >
+                  <TextArea
+                    label="Other Information"
+                    name="other_information"
+                    type="text"
+                  />
+                </div>
+                {/* Mobile View */}
+                <div className="hidden md:block">
+                  <TextField
+                    label="Full Name"
+                    name="fullname"
+                    type="text"
+                    extraLabel="(First name Last name)"
+                    placeholder="Enter your full name"
+                  />
+                  <TextField
+                    label="Email Address"
+                    name="email"
+                    type="email"
+                    placeholder="Enter your email address"
+                  />
+                  <PhoneField 
+                      label="Phone Number"
+                      specialLabel="Store Number"
+                      name="phone_no"
+                      required={true}
+                    />
+                    <CustomSelect 
+                      onChange={value=>formik.setFieldValue('gender', value.value)}
+                      error={formik.errors.gender}
+                      value={formik.values.gender}
+                      label="Gender"
+                      options={options}
+                      required={true}
+                    />
+                    <TextField
+                      label="Name of Institution"
+                      name="institution"
+                      type="text"
+                      placeholder="Enter your Institution Name"
+                    />
+                    <CustomSelect 
+                      onChange={value=>formik.setFieldValue('state', value.value)}
+                      error={formik.errors.state}
+                      value={formik.values.state}
+                      label="State/ Location"
+                      options={states}
+                      required={true}
+                    />
+                    <TextField
+                      label="Working Day(s)"
+                      name="working"
+                      type="text"
+                      placeholder="Enter working day(s) (e.g Monday & Saturday)"
+                    />
+                    <TextField
+                      label="Year(s) of Experience"
+                      name="experience"
+                      type="number"
+                      placeholder="Enter your year(s) of experience"
+                    />
+                    <TextArea
+                      label="Other Information"
+                      name="other_information"
+                      type="text"
+                    />
+                    <PasswordField
+                      label="Password"
+                      name="password"
+                      placeholder="Enter Password"
+                    />
+                    <ConfirmField
+                      label="Confirm Password"
+                      name="confirmPassword"
+                      placeholder="Confirm Password"
+                    />
+                </div>
+              </div>
+              <div className="flex w-full gap-6 md:flex-col ">
+                <div className="w-1/2 md:w-full">
+                  <h1 className="mb-2 text-base font-bold md:font-bold">
+                    <span style={{ color: "red" }}>*</span> Bank Info
+                  </h1>
+                  <div className="px-10 py-6 mx-0 mb-10 border-t-4 shadow-lg doc md:px-4 border-umcolor-secondary">
+                    <div className="">
+                      <CustomSelect 
+                        onChange={value=>formik.setFieldValue('bank_name', value.value)}
+                        error={formik.errors.bank_name}
+                        value={formik.values.bank_name}
+                        label="Bank Name"
+                        options={bankOptions}
+                        required={true}
+                      />
+                      <TextField
+                        label="Account Number"
+                        name="accountNumber"
+                        type="text"
+                        pattern="[0-9]*"
+                        data-numeric-input
+                        placeholder="Enter your account number"
+                      />
+                      <TextField
+                        label="Account Name"
+                        name="accountName"
+                        disabled
+                        type="text"
+                        placeholder="Enter your account name"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="w-1/2 md:w-full">
+                  <h1 className="mb-2 text-base font-bold md:text-sm">
+                    <span style={{ color: "red" }}>*</span> <span className="md:font-bold" >Upload Document</span>
+                  </h1>
+                  <div className="px-10 py-6 mx-0 mb-10 bg-gray-100 border-t-4 shadow-lg md:px-4 doc border-umcolor-secondary">
+                    <div className="">
+                      <div>
+                        <h4 className="md:text-sm">Upload National I.D Card</h4>
+                        <UploadComponent 
+                          name="nationalId" 
+                          setFieldValue={formik.setFieldValue} 
+                          validate={formik.touched.nationalId} 
+                          onBlur={formik.handleBlur}
+                        />
+                      </div>
+
+                      <div className="mt-8 md:mt-6">
+                        <h4 className="">Upload I.D Card</h4>
+                        <UploadComponent 
+                          name="idCard" 
+                          setFieldValue={formik.setFieldValue} 
+                          validate={formik.touched.idCard} 
+                          onBlur={formik.handleBlur}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="flex justify-center">
+                <Field
+                  name="acceptTerms"
+                  type="checkbox"
+                  component={CheckField}
+                />
+              </div>
+              <div className="flex flex-col gap-10 mt-10 md:px-0 px-60">
+                <div className="flex justify-center">
+                  <button
+                    type="submit"
+                    className={`px-20 py-3 text-lg md:w-full md:text-xs font-bold rounded-md bg-umcolor-primary text-umcolor-secondary ${!(formik.dirty && formik.isValid) && "opacity-50"}`}
+                    disable={!(formik.dirty && formik.isValid)}
+                  >
+                    Register
+                  </button>
+                </div>
+                <div
+                  className="mb-10 font-medium text-center md:text-sm"
+                  style={{ color: "#9D9D9B" }}
+                >
+                  <p>
+                    Already have an account ?{" "}
+                    <Link
+                      to="/login"
+                      className="no-underline text-umcolor-secondary md:text-purple-900 md:font-semibold"
+                    >
+                      Sign In
+                    </Link>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </Form>
+        )}
+      </Formik>
+    </div>
+  );
+};
+
+export default DeliverySignup;
+
+const DeliveryFormik = () => {
+  const formikContext = useFormikContext();
+  const { values, setFieldValue } = formikContext;
+
+  const { accountNumber, bank_name } = values;
+  const { data, isSuccess, isError } =
+    useBankDetails(accountNumber, bank_name);
+
+  useEffect(() => {
+    if(isSuccess) {
+      if(data.data.status==="error") {
+        setFieldValue("accountName","")
+      } else {
+        setFieldValue("accountName",data.data?.account_name)
+      }
+    } else if(isError) {
+      setFieldValue("accountName","")
+    }
+  }, [ data ])
+
+  return(<></>)
+}
