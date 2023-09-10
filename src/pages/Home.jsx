@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
-import { BsCCircleFill } from 'react-icons/bs';
+// import { BsCCircleFill } from 'react-icons/bs';
 import Illustrate from '../assets/illustrate.png';
-import BusinessMan from '../assets/manager-business-attire.jpg';
+// import BusinessMan from '../assets/manager-business-attire.jpg';
 // import Invest from '../assets/investor.svg';
 import { services } from '../data/services';
 import { faq } from '../data/faq';
@@ -51,7 +51,7 @@ const Home = () => {
         <section className=' px-6 md:px-[8%] pb-14 md:pb-[8%]' >
           <div >
             <h2 className="mb-8 text-center">
-              Our <span className=' text-palette-four' >Services</span>
+              Our <span className=' text-palette-one' >Services</span>
             </h2>
             <div className='grid grid-cols-1 gap-y-5 md:grid-cols-3 md:gap-x-8' >
               {/* Card 1 */}
@@ -98,7 +98,7 @@ const Home = () => {
             </div>
           </div>
         </section>
-        <section className='px-6 md:px-[8%] pb-14 md:pb-[8%]' >
+        {/* <section className='px-6 md:px-[8%] pb-14 md:pb-[8%]' >
           <div className='grid grid-cols-1 md:grid-cols-2 md:gap-8' >
             <InViewAnimateLeft>
               <img src={BusinessMan} alt="application process" className='w-full h-full' />
@@ -136,7 +136,7 @@ const Home = () => {
               </InViewAnimateRight>
             </div>
           </div>
-        </section>
+        </section> */}
         {/* <section className='px-6 md:px-[8%] pb-14 md:pb-[8%]' >
           <div className='flex flex-col justify-center gap-5 mx-auto md:flex-row' >
             <img 

@@ -1,5 +1,5 @@
 import {
-  FaWallet,
+  FaLandmark,
   FaBuilding,
   FaHome,
   FaIndustry
@@ -23,5 +23,11 @@ export const services = [
     content:
       "Includes manufacturing buildings and property,  as well as warehouses. The buildings can be used for research, production, storage, ,and distribution of goods. Some buildings that distribute goods are considered",
     icon: <FaIndustry />,
+  },
+  {
+    title: "Special Purposes",
+    content:
+      "Includes manufacturing buildings and property,  as well as warehouses. The buildings can be used for research, production, storage, ,and distribution of goods. Some buildings that distribute goods are considered",
+    icon: <FaLandmark />,
   },
 ];
